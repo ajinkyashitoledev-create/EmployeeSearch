@@ -1,0 +1,48 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.menu-toggle {
+  margin-right: 8px;
+}
+
+.brand-icon {
+  margin-right: 8px;
+}
+
+.brand {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+}
+
+.username {
+  font-weight: 500;
+}
+
+.role-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 599px) {
+  .username {
+    display: none;
+  }
+}

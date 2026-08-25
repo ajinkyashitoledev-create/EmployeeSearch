@@ -1,0 +1,159 @@
+<div class="employees-page">
+  <div class="page-header">
+    <div>
+      <h1>Employees</h1>
+      <p class="subtitle">Search, filter, and manage Developers and Managers.</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" [matMenuTriggerFor]="addMenu">
+        <mat-icon>add</mat-icon> Add employee
+      </button>
+      <mat-menu #addMenu="matMenu">
+        <button mat-menu-item (click)="openCreateDialog('developer')">
+          <mat-icon>code</mat-icon> <span>Developer</span>
+        </button>
+        <button mat-menu-item (click)="openCreateDialog('manager')">
+          <mat-icon>supervisor_account</mat-icon> <span>Manager</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <form [formGroup]="filterForm" class="filter-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search by name or email</mat-label>
+      <input matInput formControlName="searchTerm" placeholder="e.g. Asha Rao" />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="employeeType">
+        <mat-option value="All">All types</mat-option>
+        <mat-option value="Developer">Developer</mat-option>
+        <mat-option value="Manager">Manager</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Department</mat-label>
+      <mat-select formControlName="departmentId">
+        <mat-option [value]="null">All departments</mat-option>
+        @for (dept of departments(); track dept.id) {
+          <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="salary-field">
+      <mat-label>Min salary</mat-label>
+      <input matInput formControlName="minSalary" type="number" min="0" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="salary-field">
+      <mat-label>Max salary</mat-label>
+      <input matInput formControlName="maxSalary" type="number" min="0" />
+    </mat-form-field>
+
+    <button mat-icon-button type="button" matTooltip="Clear filters" (click)="clearFilters()">
+      <mat-icon>filter_alt_off</mat-icon>
+    </button>
+  </form>
+
+  <div class="table-card">
+    @if (isLoading()) {
+      <div class="loading-overlay">
+        <mat-progress-spinner diameter="40" mode="indeterminate" />
+      </div>
+    }
+
+    <div class="table-scroll">
+      <table mat-table [dataSource]="employees()" matSort (matSortChange)="onSortChange($event)">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="LastName">Name</th>
+          <td mat-cell *matCellDef="let e">
+            <div class="employee-name">{{ e.fullName }}</div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let e">
+            <mat-chip-set>
+              @if (e.employeeType === 'developer') {
+                <mat-chip class="chip-developer">
+                  <mat-icon matChipAvatar>code</mat-icon>
+                  {{ e.programmingLanguage }} &middot; {{ e.yearsOfExperience }}y
+                </mat-chip>
+              } @else {
+                <mat-chip class="chip-manager">
+                  <mat-icon matChipAvatar>supervisor_account</mat-icon>
+                  Team of {{ e.teamSize }}
+                </mat-chip>
+              }
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Contact</th>
+          <td mat-cell *matCellDef="let e">
+            <div>{{ e.email }}</div>
+            <div class="muted">{{ e.phoneNumber }}</div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="DepartmentId">Department</th>
+          <td mat-cell *matCellDef="let e">{{ e.departmentName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="salary">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="Salary">Salary</th>
+          <td mat-cell *matCellDef="let e">{{ e.salary | currency }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="hireDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="HireDate">Hired</th>
+          <td mat-cell *matCellDef="let e">{{ e.hireDate | date: 'mediumDate' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-col">Actions</th>
+          <td mat-cell *matCellDef="let e" class="actions-col">
+            <button mat-icon-button matTooltip="Edit" (click)="openEditDialog(e)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            @if (auth.hasRole('Admin')) {
+              <button mat-icon-button matTooltip="Delete" color="warn" (click)="confirmDelete(e)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
+            @if (!isLoading()) {
+              <div class="no-data">
+                <mat-icon>search_off</mat-icon>
+                <span>No employees match your filters.</span>
+              </div>
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+    />
+  </div>
+</div>

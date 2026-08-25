@@ -1,0 +1,120 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  mat-form-field {
+    min-width: 160px;
+  }
+
+  .search-field {
+    flex: 1 1 260px;
+    min-width: 220px;
+  }
+
+  .salary-field {
+    width: 140px;
+  }
+}
+
+.table-card {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.employee-name {
+  font-weight: 600;
+}
+
+.muted {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.85rem;
+}
+
+.chip-developer {
+  background: #e0f2f1 !important;
+  color: #00695c !important;
+}
+
+.chip-manager {
+  background: #fff3e0 !important;
+  color: #e65100 !important;
+}
+
+.actions-col {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.no-data-cell {
+  padding: 32px 16px !important;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(0, 0, 0, 0.45);
+
+  mat-icon {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+  }
+}
+
+@media (max-width: 599px) {
+  .filter-bar {
+    flex-direction: column;
+
+    mat-form-field,
+    .search-field,
+    .salary-field {
+      width: 100%;
+    }
+  }
+}

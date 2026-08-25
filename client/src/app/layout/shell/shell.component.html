@@ -1,0 +1,24 @@
+<app-navbar (menuToggle)="toggleSidenav()" />
+
+@if (loading.isLoading()) {
+  <mat-progress-bar mode="indeterminate" class="top-loading-bar" />
+}
+
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav
+    #sidenav
+    class="shell-sidenav"
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="!isMobile()"
+    [fixedInViewport]="isMobile()"
+    [fixedTopGap]="56"
+  >
+    <app-sidebar (navigated)="closeIfMobile()" />
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell-content">
+    <div class="page-container">
+      <router-outlet />
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

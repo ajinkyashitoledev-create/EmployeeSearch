@@ -1,0 +1,151 @@
+<h2 mat-dialog-title>
+  {{ isEdit ? 'Edit ' + data.employee?.fullName : 'Add New Employee' }}
+</h2>
+
+<mat-dialog-content>
+  @if (!isEdit) {
+    <mat-button-toggle-group
+      class="type-toggle"
+      [value]="employeeType()"
+      (change)="setType($event.value)"
+    >
+      <mat-button-toggle value="developer">
+        <mat-icon>code</mat-icon> Developer
+      </mat-button-toggle>
+      <mat-button-toggle value="manager">
+        <mat-icon>supervisor_account</mat-icon> Manager
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  }
+
+  <form [formGroup]="form" class="employee-form">
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>First name</mat-label>
+        <input matInput formControlName="firstName" />
+        @if (form.controls.firstName.touched && form.controls.firstName.invalid) {
+          <mat-error>First name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last name</mat-label>
+        <input matInput formControlName="lastName" />
+        @if (form.controls.lastName.touched && form.controls.lastName.invalid) {
+          <mat-error>Last name is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" />
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+          <mat-error>Email is required</mat-error>
+        } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
+          <mat-error>Enter a valid email</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone number</mat-label>
+        <input matInput formControlName="phoneNumber" />
+        @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) {
+          <mat-error>Phone number is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Hire date</mat-label>
+        <input matInput [matDatepicker]="hireDatePicker" formControlName="hireDate" />
+        <mat-datepicker-toggle matSuffix [for]="hireDatePicker" />
+        <mat-datepicker #hireDatePicker />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Salary</mat-label>
+        <input matInput formControlName="salary" type="number" min="0.01" step="0.01" />
+        <span matTextPrefix>$&nbsp;</span>
+        @if (form.controls.salary.touched && form.controls.salary.invalid) {
+          <mat-error>Salary must be greater than 0</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Department</mat-label>
+      <mat-select formControlName="departmentId">
+        @for (dept of data.departments; track dept.id) {
+          <mat-option [value]="dept.id">{{ dept.name }} &mdash; {{ dept.location }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.departmentId.touched && form.controls.departmentId.invalid) {
+        <mat-error>Department is required</mat-error>
+      }
+    </mat-form-field>
+
+    @if (employeeType() === 'developer') {
+      <div class="type-section">
+        <h3>Developer details</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Programming language</mat-label>
+            <input matInput formControlName="programmingLanguage" />
+            @if (form.controls.programmingLanguage.touched && form.controls.programmingLanguage.invalid) {
+              <mat-error>Required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Years of experience</mat-label>
+            <input matInput formControlName="yearsOfExperience" type="number" min="0" max="60" />
+            @if (form.controls.yearsOfExperience.touched && form.controls.yearsOfExperience.invalid) {
+              <mat-error>Enter 0&ndash;60</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>GitHub profile (optional)</mat-label>
+          <input matInput formControlName="gitHubProfile" placeholder="github.com/username" />
+        </mat-form-field>
+      </div>
+    } @else {
+      <div class="type-section">
+        <h3>Manager details</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Team size</mat-label>
+            <input matInput formControlName="teamSize" type="number" min="0" max="500" />
+            @if (form.controls.teamSize.touched && form.controls.teamSize.invalid) {
+              <mat-error>Enter 0&ndash;500</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Bonus</mat-label>
+            <input matInput formControlName="bonus" type="number" min="0" step="0.01" />
+            <span matTextPrefix>$&nbsp;</span>
+            @if (form.controls.bonus.touched && form.controls.bonus.invalid) {
+              <mat-error>Bonus cannot be negative</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()" [disabled]="isSubmitting()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="isSubmitting()">
+    @if (isSubmitting()) {
+      <mat-progress-spinner diameter="20" mode="indeterminate" />
+    } @else {
+      <span>{{ isEdit ? 'Save changes' : 'Create' }}</span>
+    }
+  </button>
+</mat-dialog-actions>

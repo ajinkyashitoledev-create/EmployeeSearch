@@ -1,0 +1,39 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: employeesearch-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${SA_PASSWORD:?Set SA_PASSWORD in a .env file — see .env.example}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: src/EmployeeSearch.API/Dockerfile
+    container_name: employeesearch-api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:8080"
+      ApplyMigrationsOnStartup: "true"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=EmployeeSearchDb;User Id=sa;Password=${SA_PASSWORD:?Set SA_PASSWORD in a .env file};TrustServerCertificate=True"
+      Jwt__Key: "${JWT_KEY:?Set JWT_KEY in a .env file — see .env.example}"
+      Jwt__Issuer: "EmployeeSearchApi"
+      Jwt__Audience: "EmployeeSearchApiClients"
+    ports:
+      - "8080:8080"
+
+volumes:
+  sqlserver_data:

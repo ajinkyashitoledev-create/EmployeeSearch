@@ -1,0 +1,77 @@
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1>Welcome back{{ auth.currentUser()?.username ? ', ' + auth.currentUser()?.username : '' }}</h1>
+      <p class="subtitle">Here's what's happening across your organization.</p>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-progress-spinner diameter="48" mode="indeterminate" />
+    </div>
+  } @else {
+    <div class="stat-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon employees">groups</mat-icon>
+        <div class="stat-value">{{ stats().totalEmployees }}</div>
+        <div class="stat-label">Total Employees</div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon developers">code</mat-icon>
+        <div class="stat-value">{{ stats().totalDevelopers }}</div>
+        <div class="stat-label">Developers</div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon managers">supervisor_account</mat-icon>
+        <div class="stat-value">{{ stats().totalManagers }}</div>
+        <div class="stat-label">Managers</div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon departments">apartment</mat-icon>
+        <div class="stat-value">{{ stats().totalDepartments }}</div>
+        <div class="stat-label">Departments</div>
+      </mat-card>
+    </div>
+
+    <div class="dashboard-columns">
+      <mat-card class="panel">
+        <h2>Quick actions</h2>
+        <div class="quick-actions">
+          <button mat-stroked-button color="primary" routerLink="/employees" [queryParams]="{ new: 'developer' }">
+            <mat-icon>code</mat-icon> Add Developer
+          </button>
+          <button mat-stroked-button color="primary" routerLink="/employees" [queryParams]="{ new: 'manager' }">
+            <mat-icon>supervisor_account</mat-icon> Add Manager
+          </button>
+          <button mat-stroked-button color="primary" routerLink="/departments">
+            <mat-icon>apartment</mat-icon> Manage Departments
+          </button>
+          <button mat-stroked-button color="primary" routerLink="/employees">
+            <mat-icon>search</mat-icon> Search Employees
+          </button>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel">
+        <h2>Recently hired</h2>
+        @if (recentHires().length === 0) {
+          <p class="empty-hint">No employees yet.</p>
+        } @else {
+          <mat-nav-list>
+            @for (employee of recentHires(); track employee.id) {
+              <a mat-list-item [routerLink]="['/employees']" [queryParams]="{ q: employee.lastName }">
+                <mat-icon matListItemIcon>{{ employee.employeeType === 'developer' ? 'code' : 'supervisor_account' }}</mat-icon>
+                <span matListItemTitle>{{ employee.fullName }}</span>
+                <span matListItemLine>{{ employee.departmentName }} &middot; hired {{ employee.hireDate | date: 'mediumDate' }}</span>
+              </a>
+            }
+          </mat-nav-list>
+        }
+      </mat-card>
+    </div>
+  }
+</div>

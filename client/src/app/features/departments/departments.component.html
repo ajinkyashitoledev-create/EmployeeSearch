@@ -1,0 +1,83 @@
+<div class="departments-page">
+  <div class="page-header">
+    <div>
+      <h1>Departments</h1>
+      <p class="subtitle">Organizational units employees belong to.</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="toggleForm()">
+      <mat-icon>{{ showForm() ? 'close' : 'add' }}</mat-icon>
+      {{ showForm() ? 'Cancel' : 'Add department' }}
+    </button>
+  </div>
+
+  @if (showForm()) {
+    <mat-card class="create-card">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="create-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="e.g. Engineering" />
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Location</mat-label>
+          <input matInput formControlName="location" placeholder="e.g. Bengaluru" />
+          @if (form.controls.location.touched && form.controls.location.invalid) {
+            <mat-error>Location is required</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <mat-progress-spinner diameter="20" mode="indeterminate" />
+          } @else {
+            <span>Save</span>
+          }
+        </button>
+      </form>
+    </mat-card>
+  }
+
+  <div class="table-card">
+    @if (isLoading()) {
+      <div class="loading-overlay">
+        <mat-progress-spinner diameter="40" mode="indeterminate" />
+      </div>
+    }
+
+    <div class="table-scroll">
+      <table mat-table [dataSource]="departments()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let d">{{ d.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="location">
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let d">{{ d.location }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="employeeCount">
+          <th mat-header-cell *matHeaderCellDef>Employees</th>
+          <td mat-cell *matCellDef="let d">{{ d.employeeCount }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
+            @if (!isLoading()) {
+              <div class="no-data">
+                <mat-icon>apartment</mat-icon>
+                <span>No departments yet.</span>
+              </div>
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

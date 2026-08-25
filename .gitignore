@@ -1,0 +1,25 @@
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+.vs/
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+
+# Docker secrets
+.env
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+
+# Angular (client/ has its own .gitignore for node_modules, dist, etc. —
+# this catches the same paths if git is ever run from the repo root)
+client/node_modules/
+client/dist/
+client/.angular/

@@ -1,0 +1,48 @@
+.type-toggle {
+  display: flex;
+  margin-bottom: 16px;
+  width: 100%;
+
+  ::ng-deep .mat-button-toggle {
+    flex: 1;
+  }
+}
+
+.employee-form {
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.type-section {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+@media (max-width: 599px) {
+  .employee-form {
+    min-width: 0;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
